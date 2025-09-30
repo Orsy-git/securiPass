@@ -1,0 +1,303 @@
+/* --- 1. Variables de Design & Réinitialisation (Inspiration Unseen/Nike) --- */
+:root {
+    --color-background: #0D0D0D; /* Noir Profond */
+    --color-surface: #1A1A1A;    /* Gris très foncé pour les cartes */
+    --color-text-dark: #FFFFFF;  /* Texte principal BLANC */
+    --color-text-light: #AAAAAA; /* Gris clair pour le texte secondaire */
+    --color-accent: #00FFFF;     /* CYANE NÉON ÉLECTRIQUE */
+    --color-success: #00FF00;    /* Vert Néon pour Succès */
+    --color-warning: #FF6600;    /* Orange Électrique pour Alerte */
+    --color-danger: #FF0066;     /* Magenta pour Danger */
+    --border-radius: 20px;       /* Coins très arrondis ou carrés */
+    --spacing-unit: 30px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Utilisation d'une police système pour la performance et le look moderne */
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text-dark);
+    line-height: 1.4;
+    text-rendering: optimizeLegibility;
+}
+
+/* --- 2. Header & Mise en Page --- */
+header {
+    background-color: var(--color-background);
+    border-bottom: 2px solid var(--color-surface);
+    padding: 20px 0;
+}
+
+.logo {
+    font-size: 1.4em;
+    font-weight: 900;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-unit);
+    letter-spacing: -1px;
+    color: var(--color-accent);
+}
+
+main {
+    max-width: 1200px; /* Largeur conservée pour l'espace blanc extérieur */
+    margin: 0 auto;
+    padding: 80px var(--spacing-unit); /* Augmentation de l'espace */
+}
+
+.hero-section {
+    padding-bottom: 70px;
+}
+
+.hero-section h1 {
+    font-size: 5em; /* TITRE MASSIF */
+    font-weight: 900; 
+    line-height: 1;
+    margin-bottom: 15px;
+    letter-spacing: -3px;
+    text-transform: uppercase;
+}
+
+.subtitle {
+    font-size: 1.8em;
+    color: var(--color-text-light);
+    font-weight: 500;
+}
+
+/* --- 3. Cartes (Cards) et Groupes --- */
+.section-card-group {
+    display: flex;
+    gap: var(--spacing-unit); 
+    margin-bottom: 40px;
+    align-items: stretch;
+}
+
+.card {
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius);
+    padding: 35px;
+    flex-grow: 1;
+    /* Suppression des ombres, utilisation de la couleur pour le contraste */
+    border: 1px solid #333333; 
+    transition: all 0.2s ease-out;
+}
+
+.card:hover {
+    border-color: var(--color-accent); /* Effet néon au survol */
+}
+
+.card h2 {
+    font-size: 1.8em;
+    font-weight: 800;
+    margin-bottom: 25px;
+    color: var(--color-text-dark);
+}
+
+/* --- KPI Group (3 colonnes) --- */
+.kpi-group .kpi-card {
+    flex-basis: calc(33.33% - 20px); 
+}
+
+.kpi-card h3 {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: var(--color-text-light);
+    margin-bottom: 5px;
+}
+
+.kpi-score {
+    font-size: 4em; /* Score ÉNORME */
+    font-weight: 900;
+    margin: 5px 0 0px;
+    line-height: 1;
+    color: var(--color-accent); /* Le KPI est la star */
+}
+
+.accent-card {
+    background: var(--color-accent);
+    color: var(--color-background); /* Texte noir sur accent */
+    border: 1px solid var(--color-accent);
+}
+.accent-card h3, .accent-card .kpi-score, .accent-card .kpi-detail {
+    color: var(--color-background);
+}
+.accent-card .kpi-score {
+    color: var(--color-background);
+}
+
+/* --- 4. Formulaires et Interaction --- */
+input[type="password"] {
+    width: 100%;
+    padding: 18px 25px;
+    border: 1px solid #555555;
+    border-radius: 8px;
+    font-size: 1.1em;
+    margin: 25px 0 30px;
+    color: var(--color-text-dark);
+    background-color: var(--color-background); /* Contraste sur la surface */
+    transition: border-color 0.2s;
+}
+
+input[type="password"]:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.4); /* Effet Glow */
+}
+
+.primary-button {
+    background-color: var(--color-accent);
+    color: var(--color-background); /* Texte noir sur fond accent */
+    border: none;
+    padding: 16px 25px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    width: 100%;
+}
+
+.primary-button:hover {
+    opacity: 0.8;
+}
+
+/* --- Générateur & Affichage --- */
+.password-display-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333333; /* Fond sombre pour le MDP */
+    border-radius: 8px;
+    padding: 15px 20px;
+    font-family: monospace; 
+    font-size: 1.3em;
+    font-weight: 500;
+    margin-bottom: 25px;
+    color: var(--color-accent); /* Le MDP est néon */
+    overflow-x: auto;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    cursor: pointer;
+    color: var(--color-text-light);
+    margin-left: 15px;
+    transition: color 0.2s;
+}
+
+.icon-button:hover {
+    color: var(--color-accent);
+}
+
+/* --- 5. Historique & Évaluation --- */
+.generator-area, .evaluation-area {
+    display: flex;
+    gap: var(--spacing-unit);
+    margin-bottom: 40px;
+    align-items: stretch;
+}
+
+.generator-card, .history-card, .main-tool-card, .education-card {
+    flex-basis: 50%;
+}
+
+.history-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.history-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #292929; /* Ligne de séparation subtile */
+    font-family: monospace;
+    font-size: 1em;
+}
+
+.empty-state {
+    color: var(--color-text-light);
+    font-style: italic;
+    text-align: center;
+    padding: 20px 0;
+}
+
+/* --- 6. Évaluation et Feedback --- */
+.results-box {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 2px solid #333333; /* Ligne épaisse de séparation */
+}
+
+#feedback-list {
+    list-style: none;
+    margin-top: 20px;
+    padding: 0;
+}
+
+#feedback-list li {
+    padding: 8px 0;
+    font-size: 0.95em;
+    color: var(--color-text-light);
+}
+
+/* Indicateurs de force (Néon) */
+.results-box.strong {
+    border-left: 5px solid var(--color-success); 
+    padding-left: 15px;
+    color: var(--color-success);
+}
+.results-box.medium {
+    border-left: 5px solid var(--color-warning); 
+    padding-left: 15px;
+    color: var(--color-warning);
+}
+.results-box.weak {
+    border-left: 5px solid var(--color-danger); 
+    padding-left: 15px;
+    color: var(--color-danger);
+}
+.results-box.strong #feedback-list li, 
+.results-box.medium #feedback-list li, 
+.results-box.weak #feedback-list li {
+    color: inherit; /* Hérite de la couleur de la section */
+}
+
+
+/* --- 7. Responsive Design --- */
+@media (max-width: 900px) {
+    .hero-section h1 {
+        font-size: 3em;
+        letter-spacing: -2px;
+    }
+    .subtitle {
+        font-size: 1.2em;
+    }
+    
+    .section-card-group {
+        flex-wrap: wrap; 
+        gap: 20px;
+    }
+    
+    .kpi-group .kpi-card {
+        flex-basis: calc(50% - 10px); 
+    }
+
+    .generator-area, .evaluation-area {
+        flex-direction: column; 
+        gap: 20px;
+    }
+    
+    .generator-card, .history-card, .main-tool-card, .education-card {
+        flex-basis: 100%;
+    }
+}

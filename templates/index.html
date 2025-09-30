@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SécuriPass | Unseen-Inspired Design</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="logo">🔒 SécuriPass</div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h1>Sécurisez votre univers numérique.</h1>
+            <p class="subtitle">Des mots de passe forts, générés et évalués avec clarté et rigueur.</p>
+        </section>
+
+        <section class="section-card-group kpi-group">
+            <div class="card kpi-card">
+                <h3>Total Généré</h3>
+                <p class="kpi-score" id="kpi-total-generated">{{ generated_count }}</p>
+                <span class="kpi-detail">Depuis le lancement du serveur</span>
+            </div>
+            
+            <div class="card kpi-card accent-card">
+                <h3>Longueur Recommandée</h3>
+                <p class="kpi-score">16+</p>
+                <span class="kpi-detail">Minimum absolu : 12</span>
+            </div>
+
+            <div class="card kpi-card">
+                <h3>Force du dernier test</h3>
+                <p class="kpi-score" id="kpi-last-score">Non testé</p>
+                <span class="kpi-detail">Score de 7/7</span>
+            </div>
+        </section>
+
+        <section class="section-card-group generator-area">
+            <div class="card generator-card">
+                <h2>Générateur Express</h2>
+                <div class="password-display-area">
+                    <p id="generated-password">Cliquez pour générer un mot de passe</p>
+                    <button class="icon-button copy-generator-btn" aria-label="Copier le mot de passe">📋</button>
+                </div>
+                <button id="generate-button" class="primary-button">Générer 16 caractères</button>
+            </div>
+            
+            <div class="card history-card">
+                <h2>Historique (5 derniers)</h2>
+                <ul id="history-list" class="history-list">
+                    {% for mdp in history_list %}
+                        <li>
+                            <span>{{ mdp }}</span>
+                            <button class="icon-button copy-history-btn" data-password="{{ mdp }}">📋</button>
+                        </li>
+                    {% else %}
+                        <li class="empty-state">Aucun mot de passe généré.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </section>
+
+        <section class="section-card-group evaluation-area">
+             <div class="card main-tool-card">
+                <h2>Évaluer votre mot de passe</h2>
+                <input type="password" id="password-input" placeholder="Entrez votre mot de passe ici...">
+                <div id="evaluation-results" class="results-box">
+                    <p>Force : <span id="force-level">...</span></p>
+                    <ul id="feedback-list">
+                        </ul>
+                </div>
+            </div>
+            
+            <div class="card education-card">
+                <h2>💡 {{ cyber_tip_title }}</h2>
+                <p class="cyber-tip-content" id="cyber-tip-content">
+                    {{ cyber_tip_content }}
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Éléments DOM
+            const generateButton = document.getElementById('generate-button');
+            const generatedPasswordDisplay = document.getElementById('generated-password');
+            const passwordInput = document.getElementById('password-input');
+            const evaluationResults = document.getElementById('evaluation-results');
+            const forceLevel = document.getElementById('force-level');
+            const feedbackList = document.getElementById('feedback-list');
+            const kpiTotalGenerated = document.getElementById('kpi-total-generated');
+            const historyListContainer = document.getElementById('history-list');
+            const copyGeneratorBtn = document.querySelector('.copy-generator-btn');
+
+            // --- Fonctions Utilitaires ---
+
+            function attachCopyListeners() {
+                // Pour les boutons d'historique (dynamiques)
+                document.querySelectorAll('.copy-history-btn').forEach(button => {
+                    button.onclick = function() {
+                        const passwordToCopy = this.getAttribute('data-password');
+                        navigator.clipboard.writeText(passwordToCopy).then(() => {
+                            const originalContent = this.textContent;
+                            this.textContent = '✅'; 
+                            setTimeout(() => this.textContent = originalContent, 1500);
+                        }).catch(err => console.error('Échec de la copie:', err));
+                    };
+                });
+                
+                // Pour le bouton du générateur (statique)
+                copyGeneratorBtn.onclick = function() {
+                    const passwordToCopy = generatedPasswordDisplay.textContent;
+                    if (passwordToCopy === "Cliquez pour générer un mot de passe") return;
+                    navigator.clipboard.writeText(passwordToCopy).then(() => {
+                        const originalContent = this.textContent;
+                        this.textContent = '✅'; 
+                        setTimeout(() => this.textContent = originalContent, 1500);
+                    });
+                };
+            }
+
+            function renderHistory(history) {
+                historyListContainer.innerHTML = ''; 
+                if (history.length === 0) {
+                    historyListContainer.innerHTML = '<li class="empty-state">Aucun mot de passe généré.</li>';
+                    return;
+                }
+                
+                history.forEach(mdp => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${mdp}</span>
+                        <button class="icon-button copy-history-btn" data-password="${mdp}">📋</button>
+                    `;
+                    historyListContainer.appendChild(li);
+                });
+                attachCopyListeners(); 
+            }
+
+            // --- 1. Génération de Mot de Passe ---
+            generateButton.addEventListener('click', () => {
+                const LENGTH = 16; 
+                
+                fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ length: LENGTH })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    generatedPasswordDisplay.textContent = data.password;
+                    kpiTotalGenerated.textContent = data.new_count;
+                    renderHistory(data.new_history);
+                })
+                .catch(error => console.error('Erreur de génération:', error));
+            });
+
+            // --- 2. Évaluation de Mot de Passe ---
+            passwordInput.addEventListener('input', () => {
+                const mdp = passwordInput.value;
+                if (mdp.length === 0) {
+                    forceLevel.textContent = '...';
+                    feedbackList.innerHTML = '';
+                    evaluationResults.classList.remove('strong', 'medium', 'weak');
+                    return;
+                }
+
+                fetch('/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: mdp })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    forceLevel.textContent = data.force;
+                    feedbackList.innerHTML = data.feedback.map(item => `<li>${item}</li>`).join('');
+
+                    // Mise à jour visuelle basée sur le score
+                    evaluationResults.className = 'results-box';
+                    if (data.score >= 5) {
+                        evaluationResults.classList.add('strong');
+                    } else if (data.score >= 3) {
+                        evaluationResults.classList.add('medium');
+                    } else {
+                        evaluationResults.classList.add('weak');
+                    }
+                })
+                .catch(error => console.error('Erreur d\'évaluation:', error));
+            });
+            
+            // Initialisation des écouteurs de copie
+            attachCopyListeners();
+        });
+    </script>
+</body>
+</html>
