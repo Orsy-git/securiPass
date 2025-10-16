@@ -5,18 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SécuriPass | Unseen-Inspired Design</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7204440079700980"
+          crossorigin="anonymous"></script>
+    
 </head>
 <body>
+    
+    <div class="slideshow-background">
+        <div class="slideshow-image current-slide" style="background-image: url('{{ url_for('static', filename='cyber_bg_1.jpg') }}');"></div>
+        <div class="slideshow-image" style="background-image: url('{{ url_for('static', filename='cyber_bg_2.jpg') }}');"></div>
+    </div>
+    
+    <div class="background-overlay-wave"></div>
+
     <header>
         <div class="logo">🔒 SécuriPass</div>
     </header>
 
     <main>
         <section class="hero-section">
-            <h1>Sécurisez votre univers numérique.</h1>
+            <h1>Sécurisez votre univers numérique avec moi.</h1>
             <p class="subtitle">Des mots de passe forts, générés et évalués avec clarté et rigueur.</p>
         </section>
-
+        
         <section class="section-card-group kpi-group">
             <div class="card kpi-card">
                 <h3>Total Généré</h3>
@@ -95,7 +107,21 @@
             const historyListContainer = document.getElementById('history-list');
             const copyGeneratorBtn = document.querySelector('.copy-generator-btn');
 
-            // --- Fonctions Utilitaires ---
+            // --- Fonctions Slideshow ---
+            const slides = document.querySelectorAll('.slideshow-image');
+            let currentSlide = 0;
+            const slideInterval = 8000; // Changer d'image toutes les 8 secondes
+
+            function nextSlide() {
+                slides[currentSlide].classList.remove('current-slide');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('current-slide');
+            }
+
+            setInterval(nextSlide, slideInterval);
+
+
+            // --- Fonctions Utilitaires d'Interactivité ---
 
             function attachCopyListeners() {
                 // Pour les boutons d'historique (dynamiques)
@@ -140,7 +166,7 @@
                 attachCopyListeners(); 
             }
 
-            // --- 1. Génération de Mot de Passe ---
+            // --- 1. Génération de Mot de Passe (API) ---
             generateButton.addEventListener('click', () => {
                 const LENGTH = 16; 
                 
@@ -158,7 +184,7 @@
                 .catch(error => console.error('Erreur de génération:', error));
             });
 
-            // --- 2. Évaluation de Mot de Passe ---
+            // --- 2. Évaluation de Mot de Passe (API) ---
             passwordInput.addEventListener('input', () => {
                 const mdp = passwordInput.value;
                 if (mdp.length === 0) {
